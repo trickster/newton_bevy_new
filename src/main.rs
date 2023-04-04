@@ -31,7 +31,7 @@ struct Collision(Entity, Entity);
 
 fn main() {
     App::new()
-        .insert_resource(Msaa::Sample4)
+        .insert_resource(Msaa::default())
         .init_resource::<State>()
         .insert_resource(ClearColor(Color::BLACK))
         .add_event::<Collision>()
@@ -39,11 +39,10 @@ fn main() {
         .add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_systems(Startup, (setup_light, setup_camera, setup_bodies))
+        .add_systems(Update, (update_camera, move_system))
         .add_systems(
             Update,
             (
-                update_camera,
-                move_system,
                 collision_system.after(move_system),
                 gravity_system.after(move_system),
                 collision_handler_system.after(collision_system),
@@ -62,6 +61,7 @@ fn setup_light(mut commands: Commands) {
 
 fn setup_camera(mut commands: Commands) {
     commands.spawn(Camera3dBundle {
+        // transform: Transform::from_xyz(0.0, 0.0, 5.0)
         transform: Transform::from_xyz(0.0, 0.0, 25.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..Default::default()
     });
@@ -119,7 +119,7 @@ fn setup_bodies(
 
             // Create many smaller bodies with fixed initial positions
             // but random small initial velocities.
-            for _ in 0..20 {
+            for _ in 0..2000 {
                 let speed = 1.0;
                 let radius = 0.01 + 0.1 * rng.gen::<f32>();
                 let volume = 4.0 * std::f32::consts::PI * f32::powf(radius, 3.0) / 3.0;
