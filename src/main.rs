@@ -39,10 +39,11 @@ fn main() {
         .add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_systems(Startup, (setup_light, setup_camera, setup_bodies))
-        .add_systems(Update, (update_camera, move_system))
         .add_systems(
             Update,
             (
+                update_camera,
+                move_system,
                 collision_system.after(move_system),
                 gravity_system.after(move_system),
                 collision_handler_system.after(collision_system),
